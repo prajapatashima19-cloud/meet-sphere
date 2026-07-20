@@ -5,7 +5,7 @@ import httpStatus from "http-status";
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
-  const BASE_URL = "http://localhost:8080/api/v1/users";
+  const BASE_URL = "https://meet-sphere-ccvb.onrender.com/api/v1/users";
 
   // Login
   const handleLogin = async (username, password) => {
@@ -41,7 +41,7 @@ export default function AuthProvider({ children }) {
         email,
         password,
       });
-      
+
       if (response.status === httpStatus.CREATED) {
         return response.data.message;
       }
