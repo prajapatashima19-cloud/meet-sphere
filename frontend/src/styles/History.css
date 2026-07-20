@@ -1,0 +1,52 @@
+.historyPage {
+  min-height: 100vh;
+  padding: 35px;
+  background: linear-gradient(135deg, #eef4ff, #dbe8ff);
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+}
+
+.historyCards {
+  display: grid;
+  /* RESPONSIVE: smaller minimum column width so cards fit on phones */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.emptyHistory {
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+}
+
+/* RESPONSIVE: tighten page padding and grid gap on small screens */
+@media (max-width: 600px) {
+  .historyPage {
+    padding: 18px;
+  }
+
+  .historyCards {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .historyHeader {
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+}

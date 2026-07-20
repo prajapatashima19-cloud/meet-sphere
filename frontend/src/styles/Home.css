@@ -1,0 +1,219 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(to right, #f5f7fa, #e4ecff);
+}
+
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(16px, 5vw, 60px);
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  min-height: 80px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logoIcon {
+  width: 52px;
+  height: 52px;
+  background: #1976d2;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(25, 118, 210, 0.25);
+  flex-shrink: 0;
+}
+
+.logoText h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.logoText p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #777;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.history {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.history:hover {
+  color: #1976d2;
+}
+
+.meetContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px clamp(20px, 6vw, 70px);
+  min-height: calc(100vh - 80px);
+  overflow: hidden;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.leftPanel {
+  flex: 1 1 400px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.leftPanel h1 {
+  font-size: clamp(28px, 5vw, 52px);
+  line-height: 1.2;
+}
+
+.joinRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.meetingCodeField {
+  width: 260px;
+  max-width: 100%;
+  flex: 1 1 220px;
+}
+
+.joinButton {
+  flex-shrink: 0;
+}
+
+.rightPanel {
+  flex: 1 1 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rightPanel img {
+  width: 40vw;
+  max-width: 420px;
+  min-width: 250px;
+  height: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  animation: float 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.rightPanel img:hover {
+  transform: scale(1.03);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVE: tablet */
+@media (max-width: 900px) {
+  .meetContainer {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding-top: 24px;
+    padding-bottom: 40px;
+  }
+
+  .leftPanel > div {
+    width: 100%;
+  }
+
+  .joinRow {
+    justify-content: center;
+  }
+
+  .rightPanel img {
+    width: 60vw;
+    max-width: 320px;
+  }
+}
+
+/* RESPONSIVE: Small phones  */
+@media (max-width: 480px) {
+  .navBar {
+    min-height: auto;
+    padding: 12px 16px;
+  }
+
+  .logoText p.tagline {
+    display: none;
+  }
+
+  .logoText h2 {
+    font-size: 20px;
+  }
+
+  .logoIcon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .navActions {
+    gap: 12px;
+  }
+
+  .history p {
+    display: none;
+  }
+
+  .joinRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .meetingCodeField {
+    width: 100%;
+  }
+
+  .joinButton {
+    width: 100%;
+  }
+
+  .rightPanel img {
+    width: 80vw;
+    padding: 18px;
+  }
+}
