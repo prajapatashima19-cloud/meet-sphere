@@ -17,7 +17,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const server_url = "https://meet-sphere-ccvb.onrender.com";
+const server_url = import.meta.env.VITE_SERVER_URL;
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
