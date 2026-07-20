@@ -44,7 +44,7 @@ export default function LandingPage() {
             Ones
           </h1>
 
-          <p>Cover a distance by apna video call</p>
+          <p>Cover a distance by MEETSPHERE</p>
           <div role="button">
             <Link to="/auth">Get Started</Link>
           </div>
