@@ -152,27 +152,39 @@ function usePinchZoomNative(elRef) {
 }
 
 /* ---------------------------------------------------------
-   2) DRAG + PINCH-ZOOM (apni local video box ke liye)
+   2) DRAG + RESIZE (apni local video box ke liye)
    - 1 finger / mouse drag => box ko screen par kahi bhi le jao
-   - 2-finger pinch => usi box ke andar video zoom karo
-   - Double-tap => zoom reset
+   - 2-finger pinch => box ka ACTUAL size bada/chota karo
+     (sirf video ke andar zoom nahi, poora box hi bada dikhega)
+   - Jo size/position set karo, wahi maintain rehta hai jab tak
+     dubara badlo ya double-tap se reset karo
 --------------------------------------------------------- */
 function useLocalVideoBox(elRef) {
-  const [scale, setScale] = useState(1);
-  const [pos, setPos] = useState(null); // null = default CSS position (bottom-right)
+  const [size, setSize] = useState(null); // null = CSS ka default responsive size use hoga
+  const [pos, setPos] = useState(null); // null = CSS ka default position (bottom-right) use hoga
 
   useEffect(() => {
     const el = elRef.current;
     if (!el) return;
 
+    const MIN_W = 90;
+    const getMaxW = () => Math.min(520, window.innerWidth * 0.9);
+
     let dragging = false;
-    let startX = 0;
-    let startY = 0;
-    let origX = 0;
-    let origY = 0;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragOrigX = 0;
+    let dragOrigY = 0;
+    let dragW = 0;
+    let dragH = 0;
 
     let pinching = false;
-    let lastDist = null;
+    let initialDist = null;
+    let pinchStartW = 0;
+    let pinchStartH = 0;
+    let pinchCenterX = 0;
+    let pinchCenterY = 0;
+
     let lastTap = 0;
 
     const getDistance = (touches) => {
@@ -181,51 +193,71 @@ function useLocalVideoBox(elRef) {
       return Math.sqrt(dx * dx + dy * dy);
     };
 
-    const clamp = (x, y) => {
-      const w = el.offsetWidth;
-      const h = el.offsetHeight;
-      return {
-        x: Math.max(0, Math.min(x, window.innerWidth - w)),
-        y: Math.max(0, Math.min(y, window.innerHeight - h)),
-      };
-    };
+    const clampPos = (x, y, w, h) => ({
+      x: Math.max(0, Math.min(x, window.innerWidth - w)),
+      y: Math.max(0, Math.min(y, window.innerHeight - h)),
+    });
 
+    // ---- Drag start (shared by touch + mouse) ----
     const startDrag = (clientX, clientY) => {
       const rect = el.getBoundingClientRect();
       dragging = true;
-      startX = clientX;
-      startY = clientY;
-      origX = rect.left;
-      origY = rect.top;
+      dragStartX = clientX;
+      dragStartY = clientY;
+      dragOrigX = rect.left;
+      dragOrigY = rect.top;
+      dragW = rect.width;
+      dragH = rect.height;
     };
 
     const moveDrag = (clientX, clientY) => {
-      const dx = clientX - startX;
-      const dy = clientY - startY;
-      setPos(clamp(origX + dx, origY + dy));
+      const dx = clientX - dragStartX;
+      const dy = clientY - dragStartY;
+      setPos(clampPos(dragOrigX + dx, dragOrigY + dy, dragW, dragH));
     };
 
     // ---- Touch (mobile) ----
     const onTouchStart = (e) => {
       if (e.touches.length === 2) {
+        // pinch shuru -> current rendered size/position se baseline lo
         pinching = true;
         dragging = false;
-        lastDist = getDistance(e.touches);
+        const rect = el.getBoundingClientRect();
+        pinchStartW = rect.width;
+        pinchStartH = rect.height;
+        pinchCenterX = rect.left + rect.width / 2;
+        pinchCenterY = rect.top + rect.height / 2;
+        initialDist = getDistance(e.touches);
       } else if (e.touches.length === 1) {
         const now = Date.now();
-        if (now - lastTap < 300) setScale(1); // double-tap reset
+        if (now - lastTap < 300) {
+          // double-tap => default size/position par wapas
+          setSize(null);
+          setPos(null);
+        }
         lastTap = now;
         startDrag(e.touches[0].clientX, e.touches[0].clientY);
       }
     };
 
     const onTouchMove = (e) => {
-      e.preventDefault(); // page zoom/scroll ko yahi rokta hai
-      if (e.touches.length === 2 && pinching && lastDist) {
+      e.preventDefault(); // page zoom/scroll yahi rokta hai
+      if (e.touches.length === 2 && pinching && initialDist) {
         const newDist = getDistance(e.touches);
-        const delta = newDist / lastDist;
-        setScale((prev) => Math.min(3, Math.max(1, prev * delta)));
-        lastDist = newDist;
+        const ratio = newDist / initialDist;
+        const aspect = pinchStartW / pinchStartH;
+
+        const maxW = getMaxW();
+        let newW = Math.min(maxW, Math.max(MIN_W, pinchStartW * ratio));
+        let newH = newW / aspect;
+
+        // box ka center wahi rakho jaha pinch shuru hua tha
+        let newX = pinchCenterX - newW / 2;
+        let newY = pinchCenterY - newH / 2;
+        const clamped = clampPos(newX, newY, newW, newH);
+
+        setSize({ width: newW, height: newH });
+        setPos(clamped);
       } else if (e.touches.length === 1 && dragging) {
         moveDrag(e.touches[0].clientX, e.touches[0].clientY);
       }
@@ -234,7 +266,7 @@ function useLocalVideoBox(elRef) {
     const onTouchEnd = (e) => {
       if (e.touches.length < 2) {
         pinching = false;
-        lastDist = null;
+        initialDist = null;
       }
       if (e.touches.length === 0) dragging = false;
     };
@@ -272,7 +304,7 @@ function useLocalVideoBox(elRef) {
     };
   }, [elRef]);
 
-  return { scale, pos, setScale, setPos };
+  return { size, pos };
 }
 
 function RemoteVideoTile({ stream, username, videoOn }) {
@@ -393,7 +425,7 @@ export default function VideoMeetComponent() {
   let [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // apni (local) video box: finger/mouse se hilana + pinch se zoom karna
-  const { scale: localScale, pos: localPos } = useLocalVideoBox(localBoxRef);
+  const { size: localSize, pos: localPos } = useLocalVideoBox(localBoxRef);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -1215,6 +1247,9 @@ export default function VideoMeetComponent() {
               position: "fixed",
               cursor: "grab",
               touchAction: "none", // browser ka apna gesture handling yaha off, sab JS control karega
+              ...(localSize
+                ? { width: localSize.width, height: localSize.height }
+                : {}),
               ...(localPos
                 ? { left: localPos.x, top: localPos.y, right: "auto", bottom: "auto" }
                 : {}),
@@ -1231,8 +1266,6 @@ export default function VideoMeetComponent() {
                   height: "100%",
                   objectFit: "cover",
                   background: "black",
-                  transform: `scale(${localScale})`,
-                  transition: localScale === 1 ? "transform 0.2s ease" : "none",
                   pointerEvents: "none", // gestures box par hi lagein, video par nahi
                 }}
               />
