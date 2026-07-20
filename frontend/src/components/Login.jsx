@@ -11,6 +11,8 @@ import {
   Paper,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -47,6 +49,12 @@ export default function Login() {
   const { handleLogin, handleRegister } = React.useContext(AuthContext);
 
   const navigate = useNavigate();
+
+  // Image side sirf tab dikhega jab screen "md" ya usse badi ho.
+  // Chhoti screen par ye Grid item render hi nahi hoga (sirf CSS se
+  // hide karne se uski height phir bhi space leti aur scroll aa jaata).
+  const theme = useTheme();
+  const showImage = useMediaQuery(theme.breakpoints.up("md"));
 
   let handleAuth = async () => {
     try {
@@ -85,7 +93,7 @@ export default function Login() {
     <Container
       maxWidth="lg"
       sx={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         display: "flex",
         alignItems: "center",
         py: 2,
@@ -101,26 +109,28 @@ export default function Login() {
         }}
       >
         <Grid container>
-          {/* Left Side */}
-          <Grid
-            size={{ xs: 12, md: 6 }}
-            sx={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              minHeight: "650px",
-            }}
-          />
+          {/* Left Side - sirf desktop/tablet par dikhta hai */}
+          {showImage && (
+            <Grid
+              size={{ xs: 12, md: 6 }}
+              sx={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                minHeight: "650px",
+              }}
+            />
+          )}
 
-          {/* Right Side */}
+          {/* Right Side - form, mobile par akela full width */}
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              p: 5,
+              p: { xs: 3, sm: 5 },
             }}
           >
             <Box
