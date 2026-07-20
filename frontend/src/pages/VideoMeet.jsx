@@ -53,46 +53,6 @@ function boostVideoBitrate(sender) {
     .catch((err) => console.log("setParameters error:", err));
 }
 
-function usePinchZoom() {
-  const [scale, setScale] = useState(1);
-  const lastDist = useRef(null);
-  const lastTap = useRef(0);
-
-  const getDistance = (touches) => {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
-  const onTouchStart = (e) => {
-    if (e.touches.length === 2) {
-      lastDist.current = getDistance(e.touches);
-    } else if (e.touches.length === 1) {
-      const now = Date.now();
-      if (now - lastTap.current < 300) {
-        setScale(1); // double-tap => reset zoom
-      }
-      lastTap.current = now;
-    }
-  };
-
-  const onTouchMove = (e) => {
-    if (e.touches.length === 2 && lastDist.current) {
-      e.preventDefault(); // sirf yahi element ka default gesture roka
-      const newDist = getDistance(e.touches);
-      const delta = newDist / lastDist.current;
-      setScale((prev) => Math.min(3, Math.max(1, prev * delta)));
-      lastDist.current = newDist;
-    }
-  };
-
-  const onTouchEnd = (e) => {
-    if (e.touches.length < 2) lastDist.current = null;
-  };
-
-  return { scale, onTouchStart, onTouchMove, onTouchEnd, setScale };
-}
-
 const getAvatarColor = (name) => {
   const colors = [
     "#4285F4",
@@ -122,9 +82,203 @@ const getInitial = (name) => {
   return name.trim().charAt(0).toUpperCase();
 };
 
+/* =========================================================
+   IMPORTANT: React ke onTouchMove synthetic handlers browser me
+   "passive" listeners hote hain by default, isliye unke andar
+   e.preventDefault() call karne se bhi page-level pinch-zoom
+   nahi rukta. Isliye hum yaha native addEventListener use kar
+   rahe hain with { passive: false } — yahi asli fix hai.
+========================================================= */
+
+/* ---------------------------------------------------------
+   1) Sirf PINCH-ZOOM (remote video tiles ke liye)
+   - 2-finger pinch => sirf isi video ko zoom karta hai
+   - Double-tap => zoom reset
+--------------------------------------------------------- */
+function usePinchZoomNative(elRef) {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+
+    let lastDist = null;
+    let lastTap = 0;
+
+    const getDistance = (touches) => {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        lastDist = getDistance(e.touches);
+      } else if (e.touches.length === 1) {
+        const now = Date.now();
+        if (now - lastTap < 300) setScale(1); // double-tap reset
+        lastTap = now;
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (e.touches.length === 2 && lastDist) {
+        e.preventDefault(); // sirf isi element ka gesture roka, page ka nahi
+        const newDist = getDistance(e.touches);
+        const delta = newDist / lastDist;
+        setScale((prev) => Math.min(3, Math.max(1, prev * delta)));
+        lastDist = newDist;
+      }
+    };
+
+    const onTouchEnd = (e) => {
+      if (e.touches.length < 2) lastDist = null;
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: false });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: false });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [elRef]);
+
+  return scale;
+}
+
+/* ---------------------------------------------------------
+   2) DRAG + PINCH-ZOOM (apni local video box ke liye)
+   - 1 finger / mouse drag => box ko screen par kahi bhi le jao
+   - 2-finger pinch => usi box ke andar video zoom karo
+   - Double-tap => zoom reset
+--------------------------------------------------------- */
+function useLocalVideoBox(elRef) {
+  const [scale, setScale] = useState(1);
+  const [pos, setPos] = useState(null); // null = default CSS position (bottom-right)
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    let origX = 0;
+    let origY = 0;
+
+    let pinching = false;
+    let lastDist = null;
+    let lastTap = 0;
+
+    const getDistance = (touches) => {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const clamp = (x, y) => {
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+      return {
+        x: Math.max(0, Math.min(x, window.innerWidth - w)),
+        y: Math.max(0, Math.min(y, window.innerHeight - h)),
+      };
+    };
+
+    const startDrag = (clientX, clientY) => {
+      const rect = el.getBoundingClientRect();
+      dragging = true;
+      startX = clientX;
+      startY = clientY;
+      origX = rect.left;
+      origY = rect.top;
+    };
+
+    const moveDrag = (clientX, clientY) => {
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+      setPos(clamp(origX + dx, origY + dy));
+    };
+
+    // ---- Touch (mobile) ----
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        pinching = true;
+        dragging = false;
+        lastDist = getDistance(e.touches);
+      } else if (e.touches.length === 1) {
+        const now = Date.now();
+        if (now - lastTap < 300) setScale(1); // double-tap reset
+        lastTap = now;
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const onTouchMove = (e) => {
+      e.preventDefault(); // page zoom/scroll ko yahi rokta hai
+      if (e.touches.length === 2 && pinching && lastDist) {
+        const newDist = getDistance(e.touches);
+        const delta = newDist / lastDist;
+        setScale((prev) => Math.min(3, Math.max(1, prev * delta)));
+        lastDist = newDist;
+      } else if (e.touches.length === 1 && dragging) {
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const onTouchEnd = (e) => {
+      if (e.touches.length < 2) {
+        pinching = false;
+        lastDist = null;
+      }
+      if (e.touches.length === 0) dragging = false;
+    };
+
+    // ---- Mouse (desktop) ----
+    const onMouseDown = (e) => {
+      e.preventDefault();
+      startDrag(e.clientX, e.clientY);
+
+      const onMouseMove = (ev) => {
+        if (dragging) moveDrag(ev.clientX, ev.clientY);
+      };
+      const onMouseUp = () => {
+        dragging = false;
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+      };
+
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: false });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: false });
+    el.addEventListener("mousedown", onMouseDown);
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+      el.removeEventListener("mousedown", onMouseDown);
+    };
+  }, [elRef]);
+
+  return { scale, pos, setScale, setPos };
+}
+
 function RemoteVideoTile({ stream, username, videoOn }) {
   const videoRef = useRef(null);
-  const { scale, onTouchStart, onTouchMove, onTouchEnd } = usePinchZoom();
+  const wrapRef = useRef(null);
+  const scale = usePinchZoomNative(wrapRef);
 
   const hasVideo =
     videoOn !== false &&
@@ -165,15 +319,8 @@ function RemoteVideoTile({ stream, username, videoOn }) {
 
   return (
     <div
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        touchAction: "none",
-      }}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      ref={wrapRef}
+      style={{ width: "100%", height: "100%", overflow: "hidden", touchAction: "none" }}
     >
       <video
         key={videoOn ? "on" : "off"}
@@ -187,6 +334,7 @@ function RemoteVideoTile({ stream, username, videoOn }) {
           background: "black",
           transform: `scale(${scale})`,
           transition: scale === 1 ? "transform 0.2s ease" : "none",
+          pointerEvents: "none",
         }}
       />
     </div>
@@ -225,6 +373,7 @@ export default function VideoMeetComponent() {
   const socketIdRef = useRef();
 
   const localVideoref = useRef();
+  const localBoxRef = useRef(); // apni video ke draggable box ka ref
   const users = useRef({});
 
   let [usernameInput, setUsernameInput] = useState("");
@@ -242,6 +391,9 @@ export default function VideoMeetComponent() {
   let [videos, setVideos] = useState([]);
 
   let [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // apni (local) video box: finger/mouse se hilana + pinch se zoom karna
+  const { scale: localScale, pos: localPos } = useLocalVideoBox(localBoxRef);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -1057,23 +1209,16 @@ export default function VideoMeetComponent() {
           </div>
 
           <div
+            ref={localBoxRef}
             className={styles.localVideoContainer}
-            draggable
-            onDragEnd={(e) => {
-              const x = Math.max(
-                0,
-                Math.min(e.clientX - 100, window.innerWidth - 200),
-              );
-              const y = Math.max(
-                0,
-                Math.min(e.clientY - 60, window.innerHeight - 150),
-              );
-              e.target.style.left = `${x}px`;
-              e.target.style.top = `${y}px`;
-              e.target.style.right = "auto";
-              e.target.style.bottom = "auto";
+            style={{
+              position: "fixed",
+              cursor: "grab",
+              touchAction: "none", // browser ka apna gesture handling yaha off, sab JS control karega
+              ...(localPos
+                ? { left: localPos.x, top: localPos.y, right: "auto", bottom: "auto" }
+                : {}),
             }}
-            style={{ position: "fixed", cursor: "grab" }}
           >
             {video ? (
               <video
@@ -1086,6 +1231,9 @@ export default function VideoMeetComponent() {
                   height: "100%",
                   objectFit: "cover",
                   background: "black",
+                  transform: `scale(${localScale})`,
+                  transition: localScale === 1 ? "transform 0.2s ease" : "none",
+                  pointerEvents: "none", // gestures box par hi lagein, video par nahi
                 }}
               />
             ) : (

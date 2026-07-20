@@ -261,6 +261,7 @@ body {
   overflow: hidden;
   border-radius: 16px;
   z-index: 999;
+  touch-action: none; /* drag + pinch dono is box ke andar hi rukein, page zoom na ho */
 
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
@@ -334,7 +335,7 @@ body {
   padding: 6px 12px;
   border-radius: 18px;
   font-size: 13px;
-  pointer-events: none; 
+  pointer-events: none; /* pinch-zoom gesture ke beech mein aade nahi */
 }
 
 .userNameText {
