@@ -44,13 +44,53 @@ function boostVideoBitrate(sender) {
   if (!params.encodings || params.encodings.length === 0) {
     params.encodings = [{}];
   }
-  params.encodings[0].maxBitrate = 2500000;       // ~2.5 Mbps, Meet ke 720p HD jaisa
+  params.encodings[0].maxBitrate = 2500000; // ~2.5 Mbps, Meet ke 720p HD jaisa
   params.encodings[0].scaleResolutionDownBy = 1.0; // full resolution bhejo
   params.encodings[0].maxFramerate = 30;
-  params.degradationPreference = "balanced";        // network tight ho to smooth graceful degrade
+  params.degradationPreference = "balanced"; // network tight ho to smooth graceful degrade
   sender
     .setParameters(params)
     .catch((err) => console.log("setParameters error:", err));
+}
+
+function usePinchZoom() {
+  const [scale, setScale] = useState(1);
+  const lastDist = useRef(null);
+  const lastTap = useRef(0);
+
+  const getDistance = (touches) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const onTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      lastDist.current = getDistance(e.touches);
+    } else if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTap.current < 300) {
+        setScale(1); // double-tap => reset zoom
+      }
+      lastTap.current = now;
+    }
+  };
+
+  const onTouchMove = (e) => {
+    if (e.touches.length === 2 && lastDist.current) {
+      e.preventDefault(); // sirf yahi element ka default gesture roka
+      const newDist = getDistance(e.touches);
+      const delta = newDist / lastDist.current;
+      setScale((prev) => Math.min(3, Math.max(1, prev * delta)));
+      lastDist.current = newDist;
+    }
+  };
+
+  const onTouchEnd = (e) => {
+    if (e.touches.length < 2) lastDist.current = null;
+  };
+
+  return { scale, onTouchStart, onTouchMove, onTouchEnd, setScale };
 }
 
 const getAvatarColor = (name) => {
@@ -84,6 +124,7 @@ const getInitial = (name) => {
 
 function RemoteVideoTile({ stream, username, videoOn }) {
   const videoRef = useRef(null);
+  const { scale, onTouchStart, onTouchMove, onTouchEnd } = usePinchZoom();
 
   const hasVideo =
     videoOn !== false &&
@@ -123,18 +164,32 @@ function RemoteVideoTile({ stream, username, videoOn }) {
   }
 
   return (
-    <video
-      key={videoOn ? "on" : "off"}
-      ref={videoRef}
-      autoPlay
-      playsInline
+    <div
       style={{
         width: "100%",
         height: "100%",
-        objectFit: "cover",
-        background: "black",
+        overflow: "hidden",
+        touchAction: "none",
       }}
-    />
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      <video
+        key={videoOn ? "on" : "off"}
+        ref={videoRef}
+        autoPlay
+        playsInline
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          background: "black",
+          transform: `scale(${scale})`,
+          transition: scale === 1 ? "transform 0.2s ease" : "none",
+        }}
+      />
+    </div>
   );
 }
 
@@ -231,11 +286,11 @@ export default function VideoMeetComponent() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-  width: { ideal: 1280 }, 
-  height: { ideal: 720 },
-  frameRate: { ideal: 30, max: 30 },
-  facingMode: "user",
-},
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30, max: 30 },
+          facingMode: "user",
+        },
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
@@ -246,7 +301,7 @@ export default function VideoMeetComponent() {
       });
 
       stream.getVideoTracks().forEach((t) => (t.contentHint = "motion"));
-      window.localStream = stream; 
+      window.localStream = stream;
 
       setVideo(stream.getVideoTracks().length > 0);
       setAudio(stream.getAudioTracks().length > 0);
@@ -281,11 +336,11 @@ export default function VideoMeetComponent() {
       navigator.mediaDevices
         .getUserMedia({
           video: {
-  width: { ideal: 1280 }, 
-  height: { ideal: 720 },
-  frameRate: { ideal: 30, max: 30 },
-  facingMode: "user",
-},
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 30, max: 30 },
+            facingMode: "user",
+          },
           audio: {
             echoCancellation: true,
             noiseSuppression: true,
@@ -363,7 +418,6 @@ export default function VideoMeetComponent() {
       connections[id]
         .createOffer()
         .then((description) => {
-          
           description.sdp = increaseAudioBitrate(description.sdp);
           return connections[id].setLocalDescription(description);
         })
