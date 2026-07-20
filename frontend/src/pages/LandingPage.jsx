@@ -8,7 +8,9 @@ export default function LandingPage() {
     <div className="landingPageContainer">
       <nav>
         <div className="navHeader">
-          <h2>MeetSphere</h2>
+          <h2>
+            Meet<span style={{ color: "#FF9839" }}>Sphere</span>
+          </h2>
         </div>
         <div className="navList">
           <p

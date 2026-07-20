@@ -66,21 +66,26 @@ body {
 }
 
 .landingMainContainer > div:nth-child(1) p {
-  color: #e0e0e0; /* slightly muted white for the subtext */
+  color: #e0e0e0;
 }
 
 .landingMainContainer > div:nth-child(1) div[role="button"] {
   background: #ff9839;
   width: fit-content;
-  padding: 1rem;
+  padding: 1rem 1.6rem;
   border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .landingMainContainer > div:nth-child(1) div[role="button"] a {
   text-decoration: none;
   color: white;
   font-size: 1.4rem;
-  margin-top: 1.9rem;
+  margin: 0;
+  text-align: center;
+  display: block;
 }
 
 .landingMainContainer > div:nth-child(2) {
