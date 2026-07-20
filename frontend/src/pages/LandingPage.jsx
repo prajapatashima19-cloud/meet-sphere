@@ -46,7 +46,10 @@ export default function LandingPage() {
             Ones
           </h1>
 
-          <p>Cover a distance by MEETSPHERE</p>
+          <p>
+            Cover a distance by Meet
+            <span style={{ color: "#FF9839" }}>Sphere</span>
+          </p>
           <div role="button">
             <Link to="/auth">Get Started</Link>
           </div>
