@@ -96,15 +96,15 @@ export default function Login() {
         minHeight: "100dvh",
         display: "flex",
         alignItems: "center",
-        py: 2,
-        overflowY: "hidden",
+        py: 1,
+        overflowY: "auto",
       }}
     >
       <Paper
         elevation={6}
         sx={{
           width: "100%",
-          maxHeight: "92dvh",
+          maxHeight: "96dvh",
           borderRadius: 4,
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
         }}
@@ -133,6 +133,7 @@ export default function Login() {
               alignItems: "center",
               p: { xs: 3, sm: 5 },
               pt: { xs: 1.5, sm: 2 },
+              pb: { xs: 2, sm: 3 },
             }}
           >
             <Box
@@ -145,9 +146,9 @@ export default function Login() {
                 sx={{
                   bgcolor: "primary.main",
                   mx: "auto",
-                  mt: 1, 
-                  width: 36,
-                  height: 36,
+                  mt: 0.5,
+                  width: { xs: 30, sm: 36 },
+                  height: { xs: 30, sm: 36 },
                 }}
               >
                 <LockOutlinedIcon fontSize="small" />
@@ -157,13 +158,14 @@ export default function Login() {
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  gap: 2,
+                  gap: 1.5,
                   mb: 0,
                   mt: 0.5,
                 }}
               >
                 <Button
                   variant={formState === 0 ? "contained" : "outlined"}
+                  size="small"
                   onClick={() => {
                     setFormState(0);
                     setError("");
@@ -173,6 +175,7 @@ export default function Login() {
                 </Button>
                 <Button
                   variant={formState === 1 ? "contained" : "outlined"}
+                  size="small"
                   onClick={() => {
                     setFormState(1);
                     setError("");
@@ -186,7 +189,7 @@ export default function Login() {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ textAlign: "center" }}
+                  sx={{ textAlign: "center", mt: 0.5 }}
                 >
                   Welcome back! Please login to continue.
                 </Typography>
@@ -197,13 +200,14 @@ export default function Login() {
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ textAlign: "center", mb: 0.5 }}
+                    sx={{ textAlign: "center", mb: 0.5, mt: 0.5 }}
                   >
                     Welcome! Please Register to continue.
                   </Typography>
 
                   <TextField
                     margin="dense"
+                    size="small"
                     label="Email"
                     id="email"
                     name="email"
@@ -217,6 +221,7 @@ export default function Login() {
 
                   <TextField
                     margin="dense"
+                    size="small"
                     label="Fullname"
                     id="fullname"
                     name="fullname"
@@ -232,6 +237,7 @@ export default function Login() {
 
               <TextField
                 margin="dense"
+                size="small"
                 label="Username"
                 id="username"
                 name="username"
@@ -246,6 +252,7 @@ export default function Login() {
 
               <TextField
                 margin="dense"
+                size="small"
                 label="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -258,6 +265,7 @@ export default function Login() {
                         <IconButton
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
+                          size="small"
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
@@ -266,16 +274,25 @@ export default function Login() {
                   },
                 }}
               />
-              <p style={{ color: "red" }}>{error}</p>
+              {error && (
+                <Typography
+                  sx={{ color: "red", fontSize: "0.85rem", mt: 0.5, mb: 0 }}
+                >
+                  {error}
+                </Typography>
+              )}
               <FormControlLabel
-                sx={{ my: -0.5 }}
+                sx={{ my: -1 }}
                 control={
                   <Checkbox
+                    size="small"
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
                   />
                 }
-                label="Remember me"
+                label={
+                  <Typography variant="body2">Remember me</Typography>
+                }
               />
 
               <Button
@@ -284,12 +301,12 @@ export default function Login() {
                 fullWidth
                 size="large"
                 sx={{
-                  mt: 1,
-                  py: 1,
+                  mt: 0.5,
+                  py: 0.7,
                   borderRadius: 3,
                   fontWeight: "bold",
                   textTransform: "none",
-                  fontSize: "1rem",
+                  fontSize: "0.95rem",
                 }}
                 onClick={handleAuth}
               >
@@ -300,12 +317,13 @@ export default function Login() {
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  mt: 2,
+                  mt: 1,
                 }}
               >
                 <Link
                   href="#"
                   underline="hover"
+                  variant="body2"
                   onClick={() => {
                     navigate("/forgot-password");
                   }}
@@ -316,6 +334,7 @@ export default function Login() {
                 <Link
                   href="#"
                   underline="hover"
+                  variant="body2"
                   onClick={() => {
                     setFormState(1);
                   }}
@@ -323,7 +342,7 @@ export default function Login() {
                   Create account
                 </Link>
               </Box>
-              <Divider sx={{ my: 1 }}>OR</Divider>
+              <Divider sx={{ my: 0.7 }}>OR</Divider>
 
               <Button
                 variant="outlined"
@@ -333,9 +352,9 @@ export default function Login() {
                   window.location.href = `${import.meta.env.VITE_SERVER_URL}/api/v1/users/auth/google`;
                 }}
                 sx={{
-                  py: 0.9,
+                  py: 0.6,
                   textTransform: "none",
-                  mb: 1,
+                  mb: 0.7,
                   borderRadius: 2,
                 }}
               >
@@ -350,7 +369,7 @@ export default function Login() {
                   window.location.href = `${import.meta.env.VITE_SERVER_URL}/api/v1/users/auth/google`;
                 }}
                 sx={{
-                  py: 0.9,
+                  py: 0.6,
                   textTransform: "none",
                   borderRadius: 2,
                 }}
