@@ -76,13 +76,13 @@ body {
 
 .meetContainer {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
   padding: 40px clamp(20px, 6vw, 70px);
   min-height: calc(100vh - 80px);
   overflow: hidden;
   flex-wrap: wrap;
-  gap: 32px;                
+  gap: 32px;
 }
 
 .leftPanel {
@@ -153,11 +153,11 @@ body {
 @media (max-width: 900px) {
   .meetContainer {
     flex-direction: column-reverse;
-    justify-content: center;   
+    justify-content: center;
     text-align: center;
     padding-top: 24px;
     padding-bottom: 40px;
-    gap: 40px;                 
+    gap: 40px;
   }
 
   .leftPanel > div {
