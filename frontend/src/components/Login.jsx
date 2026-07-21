@@ -97,14 +97,14 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         py: 2,
-        overflowY: "auto",
+        overflowY: "hidden",
       }}
     >
       <Paper
         elevation={6}
         sx={{
           width: "100%",
-          maxHeight: "95dvh",
+          maxHeight: "92dvh",
           overflowY: "auto",
           borderRadius: 4,
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
