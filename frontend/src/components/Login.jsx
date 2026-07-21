@@ -97,19 +97,21 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         py: 2,
+        overflowY: "auto",
       }}
     >
       <Paper
         elevation={6}
         sx={{
           width: "100%",
-          overflow: "auto",
+          maxHeight: "95dvh",
+          overflowY: "auto",
           borderRadius: 4,
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
         }}
       >
         <Grid container>
-          {/* Left Side - sirf desktop/tablet par dikhta hai */}
+          {/* Left Side */}
           {showImage && (
             <Grid
               size={{ xs: 12, md: 6 }}
@@ -143,9 +145,11 @@ export default function Login() {
                 sx={{
                   bgcolor: "primary.main",
                   mx: "auto",
+                  width: 36,
+                  height: 36,
                 }}
               >
-                <LockOutlinedIcon />
+                <LockOutlinedIcon fontSize="small" />
               </Avatar>
 
               <Box
@@ -211,7 +215,7 @@ export default function Login() {
                   />
 
                   <TextField
-                    margin="normal"
+                    margin="dense"
                     label="Fullname"
                     id="fullname"
                     name="fullname"
@@ -317,7 +321,7 @@ export default function Login() {
                   Create account
                 </Link>
               </Box>
-              <Divider sx={{ my: 2 }}>OR</Divider>
+              <Divider sx={{ my: 1.5 }}>OR</Divider>
 
               <Button
                 variant="outlined"
@@ -327,9 +331,9 @@ export default function Login() {
                   window.location.href = `${import.meta.env.VITE_SERVER_URL}/api/v1/users/auth/google`;
                 }}
                 sx={{
-                  py: 1.3,
+                  py: 1,
                   textTransform: "none",
-                  mb: 2,
+                  mb: 1.5,
                   borderRadius: 2,
                 }}
               >
@@ -344,9 +348,10 @@ export default function Login() {
                   window.location.href = `${import.meta.env.VITE_SERVER_URL}/api/v1/users/auth/google`;
                 }}
                 sx={{
-                  py: 1.3,
+                  py: 1,
                   textTransform: "none",
                   borderRadius: 2,
+                  mb: 1,
                 }}
               >
                 Sign in with GitHub
