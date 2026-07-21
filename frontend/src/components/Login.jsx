@@ -139,7 +139,9 @@ export default function Login() {
             <Box
               component="form"
               sx={{
-                width: "80%",
+                width: "100%",
+                maxWidth: 420,
+                mx: "auto",
               }}
             >
               <Avatar
