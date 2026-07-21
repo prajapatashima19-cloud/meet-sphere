@@ -444,63 +444,69 @@ export default function VideoMeetComponent() {
   }, [video]);
 
   const getPermissions = async () => {
-    if (window.localStream && window.localStream.active) {
-      const hasVideo = window.localStream.getVideoTracks().length > 0;
-      const hasAudio = window.localStream.getAudioTracks().length > 0;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-      setVideo(hasVideo);
-      setAudio(hasAudio);
-      setVideoAvailable(hasVideo);
-      setAudioAvailable(hasAudio);
+  if (window.localStream && window.localStream.active) {
+    const hasVideo = window.localStream.getVideoTracks().length > 0;
+    const hasAudio = window.localStream.getAudioTracks().length > 0;
 
-      if (localVideoref.current) {
-        localVideoref.current.srcObject = window.localStream;
-      }
+    setVideo(hasVideo);
+    setAudio(hasAudio);
+    setVideoAvailable(hasVideo);
+    setAudioAvailable(hasAudio);
 
-      if (navigator.mediaDevices.getDisplayMedia) {
-        setScreenAvailable(true);
-      }
-      return;
+    if (localVideoref.current) {
+      localVideoref.current.srcObject = window.localStream;
     }
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          frameRate: { ideal: 30, max: 30 },
-          facingMode: "user",
-        },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 48000,
-          channelCount: 1,
-        },
-      });
-
-      stream.getVideoTracks().forEach((t) => (t.contentHint = "motion"));
-      window.localStream = stream;
-
-      setVideo(stream.getVideoTracks().length > 0);
-      setAudio(stream.getAudioTracks().length > 0);
-      setVideoAvailable(stream.getVideoTracks().length > 0);
-      setAudioAvailable(stream.getAudioTracks().length > 0);
-
-      if (localVideoref.current) {
-        localVideoref.current.srcObject = window.localStream;
-      }
-
-      if (navigator.mediaDevices.getDisplayMedia) {
-        setScreenAvailable(true);
-      }
-    } catch (err) {
-      console.log(err);
-      setVideoAvailable(false);
-      setAudioAvailable(false);
+    if (navigator.mediaDevices.getDisplayMedia && !isMobile) {
+      setScreenAvailable(true);
+    } else {
+      setScreenAvailable(false);
     }
-  };
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30, max: 30 },
+        facingMode: "user",
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 48000,
+        channelCount: 1,
+      },
+    });
+
+    stream.getVideoTracks().forEach((t) => (t.contentHint = "motion"));
+    window.localStream = stream;
+
+    setVideo(stream.getVideoTracks().length > 0);
+    setAudio(stream.getAudioTracks().length > 0);
+    setVideoAvailable(stream.getVideoTracks().length > 0);
+    setAudioAvailable(stream.getAudioTracks().length > 0);
+
+    if (localVideoref.current) {
+      localVideoref.current.srcObject = window.localStream;
+    }
+
+    if (navigator.mediaDevices.getDisplayMedia && !isMobile) {
+      setScreenAvailable(true);
+    } else {
+      setScreenAvailable(false);
+    }
+  } catch (err) {
+    console.log(err);
+    setVideoAvailable(false);
+    setAudioAvailable(false);
+  }
+};
 
   let getUserMedia = (wantVideo = video, wantAudio = audio) => {
     if (window.localStream && window.localStream.active) {
@@ -1003,34 +1009,29 @@ export default function VideoMeetComponent() {
     }
   }, [screen]);
 
-  const getGridLayout = (count, width) => {
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (navigator.mediaDevices.getDisplayMedia && !isMobile) {
-      setScreenAvailable(true);
-    } else {
-      setScreenAvailable(false);
-    }
-    const isTablet = width > 768 && width <= 1024;
+ const getGridLayout = (count, width) => {
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isTablet = width > 768 && width <= 1024;
 
-    if (isMobile) {
-      return { cols: count <= 2 ? 1 : 2 };
-    }
+  if (isMobile) {
+    return { cols: count <= 2 ? 1 : 2 };
+  }
 
-    if (isTablet) {
-      if (count <= 1) return { cols: 1 };
-      if (count <= 4) return { cols: 2 };
-      return { cols: 3 };
-    }
-
-    // desktop
+  if (isTablet) {
     if (count <= 1) return { cols: 1 };
-    if (count === 2) return { cols: 2 };
     if (count <= 4) return { cols: 2 };
-    if (count <= 6) return { cols: 3 };
-    if (count <= 9) return { cols: 3 };
-    if (count <= 12) return { cols: 4 };
-    return { cols: 5 };
-  };
+    return { cols: 3 };
+  }
+
+  // desktop
+  if (count <= 1) return { cols: 1 };
+  if (count === 2) return { cols: 2 };
+  if (count <= 4) return { cols: 2 };
+  if (count <= 6) return { cols: 3 };
+  if (count <= 9) return { cols: 3 };
+  if (count <= 12) return { cols: 4 };
+  return { cols: 5 };
+};
 
   let handleScreen = () => {
     setScreen(!screen);
