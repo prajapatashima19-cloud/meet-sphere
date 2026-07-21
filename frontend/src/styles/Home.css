@@ -273,14 +273,7 @@ body {
   }
 
   .rightPanel {
-    order: -1;
-    margin-bottom: 0;
-  }
-
-  .rightPanel img {
-    width: clamp(90px, 32vw, 220px);
-    padding: clamp(8px, 2vh, 16px);
-    padding: clamp(8px, 2dvh, 16px);
+    display: none;
   }
 }
 
