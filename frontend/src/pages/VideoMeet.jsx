@@ -151,21 +151,17 @@ function usePinchZoomNative(elRef) {
   return scale;
 }
 
-/* ---------------------------------------------------------
-   2) DRAG + RESIZE (apni local video box ke liye)
-   - 1 finger / mouse drag => box ko screen par kahi bhi le jao
-   - 2-finger pinch => box ka ACTUAL size bada/chota karo
-     (sirf video ke andar zoom nahi, poora box hi bada dikhega)
-   - Jo size/position set karo, wahi maintain rehta hai jab tak
-     dubara badlo ya double-tap se reset karo
---------------------------------------------------------- */
-function useLocalVideoBox(elRef) {
-  const [size, setSize] = useState(null); // null = CSS ka default responsive size use hoga
-  const [pos, setPos] = useState(null); // null = CSS ka default position (bottom-right) use hoga
+function useLocalVideoBox() {
+  const [el, setEl] = useState(null);
+  const boxRef = React.useCallback((node) => {
+    setEl(node);
+  }, []);
+
+  const [size, setSize] = useState(null);
+  const [pos, setPos] = useState(null);
 
   useEffect(() => {
-    const el = elRef.current;
-    if (!el) return;
+    if (!el) return; // ab ye tabhi return karega jab wakai element nahi hai
 
     const MIN_W = 90;
     const getMaxW = () => Math.min(520, window.innerWidth * 0.9);
@@ -198,7 +194,6 @@ function useLocalVideoBox(elRef) {
       y: Math.max(0, Math.min(y, window.innerHeight - h)),
     });
 
-    // ---- Drag start (shared by touch + mouse) ----
     const startDrag = (clientX, clientY) => {
       const rect = el.getBoundingClientRect();
       dragging = true;
@@ -216,10 +211,8 @@ function useLocalVideoBox(elRef) {
       setPos(clampPos(dragOrigX + dx, dragOrigY + dy, dragW, dragH));
     };
 
-    // ---- Touch (mobile) ----
     const onTouchStart = (e) => {
       if (e.touches.length === 2) {
-        // pinch shuru -> current rendered size/position se baseline lo
         pinching = true;
         dragging = false;
         const rect = el.getBoundingClientRect();
@@ -231,7 +224,6 @@ function useLocalVideoBox(elRef) {
       } else if (e.touches.length === 1) {
         const now = Date.now();
         if (now - lastTap < 300) {
-          // double-tap => default size/position par wapas
           setSize(null);
           setPos(null);
         }
@@ -241,7 +233,7 @@ function useLocalVideoBox(elRef) {
     };
 
     const onTouchMove = (e) => {
-      e.preventDefault(); // page zoom/scroll yahi rokta hai
+      e.preventDefault();
       if (e.touches.length === 2 && pinching && initialDist) {
         const newDist = getDistance(e.touches);
         const ratio = newDist / initialDist;
@@ -251,7 +243,6 @@ function useLocalVideoBox(elRef) {
         let newW = Math.min(maxW, Math.max(MIN_W, pinchStartW * ratio));
         let newH = newW / aspect;
 
-        // box ka center wahi rakho jaha pinch shuru hua tha
         let newX = pinchCenterX - newW / 2;
         let newY = pinchCenterY - newH / 2;
         const clamped = clampPos(newX, newY, newW, newH);
@@ -271,7 +262,6 @@ function useLocalVideoBox(elRef) {
       if (e.touches.length === 0) dragging = false;
     };
 
-    // ---- Mouse (desktop) ----
     const onMouseDown = (e) => {
       e.preventDefault();
       startDrag(e.clientX, e.clientY);
@@ -302,9 +292,9 @@ function useLocalVideoBox(elRef) {
       el.removeEventListener("touchcancel", onTouchEnd);
       el.removeEventListener("mousedown", onMouseDown);
     };
-  }, [elRef]);
+  }, [el]); // <-- ab `el` change hote hi effect re-run hoga
 
-  return { size, pos };
+  return { ref: boxRef, size, pos };
 }
 
 function RemoteVideoTile({ stream, username, videoOn }) {
@@ -424,8 +414,8 @@ export default function VideoMeetComponent() {
 
   let [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  // apni (local) video box: finger/mouse se hilana + pinch se zoom karna
-  const { size: localSize, pos: localPos } = useLocalVideoBox(localBoxRef);
+ 
+ const { ref: localBoxRef, size: localSize, pos: localPos } = useLocalVideoBox();
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
