@@ -159,7 +159,7 @@ export default function Login() {
                   display: "flex",
                   justifyContent: "center",
                   gap: 2,
-                  mb: 1,
+                  mb: 0,
                   mt: 0.5,
                 }}
               >
