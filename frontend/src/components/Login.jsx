@@ -106,6 +106,7 @@ export default function Login() {
           width: "100%",
           maxHeight: "96dvh",
           borderRadius: 4,
+          overflow: "hidden", // ye naya add karo
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
         }}
       >
@@ -291,9 +292,7 @@ export default function Login() {
                     onChange={(e) => setRemember(e.target.checked)}
                   />
                 }
-                label={
-                  <Typography variant="body2">Remember me</Typography>
-                }
+                label={<Typography variant="body2">Remember me</Typography>}
               />
 
               <Button
