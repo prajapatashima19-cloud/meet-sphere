@@ -695,6 +695,13 @@ export default function VideoMeetComponent() {
   };
 
   const getDislayMedia = async () => {
+    if (!navigator.mediaDevices?.getDisplayMedia) {
+      alert(
+        "Screen sharing is not supported on this device/browser. Mobile browsers (especially iOS) generally don't support it.",
+      );
+      setScreen(false);
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
@@ -707,6 +714,9 @@ export default function VideoMeetComponent() {
       getDislayMediaSuccess(stream);
     } catch (err) {
       console.log(err);
+      alert(
+        "Couldn't start screen share — this may not be supported on your device.",
+      );
       setScreen(false);
     }
   };
@@ -994,7 +1004,12 @@ export default function VideoMeetComponent() {
   }, [screen]);
 
   const getGridLayout = (count, width) => {
-    const isMobile = width <= 768;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (navigator.mediaDevices.getDisplayMedia && !isMobile) {
+      setScreenAvailable(true);
+    } else {
+      setScreenAvailable(false);
+    }
     const isTablet = width > 768 && width <= 1024;
 
     if (isMobile) {
