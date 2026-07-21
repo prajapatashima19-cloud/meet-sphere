@@ -104,8 +104,8 @@ export default function Login() {
         elevation={6}
         sx={{
           width: "100%",
-          maxHeight: "90dvh",
-          overflowY: "hidden",
+          maxHeight: "92dvh",
+          overflowY: "auto",
           borderRadius: 4,
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
         }}
