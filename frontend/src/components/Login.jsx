@@ -125,7 +125,7 @@ export default function Login() {
             />
           )}
 
-          {/* Right Side - form, mobile par akela full width */}
+          {/* Right Side */}
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{
@@ -196,7 +196,7 @@ export default function Login() {
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ textAlign: "center" }}
+                    sx={{ textAlign: "center", mb: 0.5 }}
                   >
                     Welcome! Please Register to continue.
                   </Typography>
@@ -230,7 +230,7 @@ export default function Login() {
               )}
 
               <TextField
-                margin="normal"
+                margin="dense"
                 label="Username"
                 id="username"
                 name="username"
@@ -244,7 +244,7 @@ export default function Login() {
               />
 
               <TextField
-                margin="normal"
+                margin="dense"
                 label="Password"
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -267,6 +267,7 @@ export default function Login() {
               />
               <p style={{ color: "red" }}>{error}</p>
               <FormControlLabel
+                sx={{ my: -0.5 }}
                 control={
                   <Checkbox
                     checked={remember}
@@ -283,7 +284,7 @@ export default function Login() {
                 size="large"
                 sx={{
                   mt: 1,
-                  py: 1.4,
+                  py: 1,
                   borderRadius: 3,
                   fontWeight: "bold",
                   textTransform: "none",
@@ -321,7 +322,7 @@ export default function Login() {
                   Create account
                 </Link>
               </Box>
-              <Divider sx={{ my: 1.5 }}>OR</Divider>
+              <Divider sx={{ my: 1 }}>OR</Divider>
 
               <Button
                 variant="outlined"
@@ -331,9 +332,9 @@ export default function Login() {
                   window.location.href = `${import.meta.env.VITE_SERVER_URL}/api/v1/users/auth/google`;
                 }}
                 sx={{
-                  py: 1,
+                  py: 0.9,
                   textTransform: "none",
-                  mb: 1.5,
+                  mb: 1,
                   borderRadius: 2,
                 }}
               >
@@ -348,10 +349,9 @@ export default function Login() {
                   window.location.href = `${import.meta.env.VITE_SERVER_URL}/api/v1/users/auth/google`;
                 }}
                 sx={{
-                  py: 1,
+                  py: 0.9,
                   textTransform: "none",
                   borderRadius: 2,
-                  mb: 1,
                 }}
               >
                 Sign in with GitHub
