@@ -87,7 +87,6 @@ body {
 
 .leftPanel {
   flex: 1 1 400px;
-  height: 100%;
   display: flex;
   align-items: center;
 }
@@ -95,12 +94,19 @@ body {
 .leftPanel h1 {
   font-size: clamp(28px, 5vw, 52px);
   line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.leftPanel p {
+  margin-top: 4px;
+  margin-bottom: 16px;
 }
 
 .joinRow {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: 8px;
 }
 
 .meetingCodeField {
@@ -113,16 +119,11 @@ body {
   flex-shrink: 0;
 }
 
-.joinRow {
+.rightPanel {
+  flex: 1 1 280px;
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 8px;  
-}
-
-.leftPanel p {
-  margin-top: 4px;    
-  margin-bottom: 16px;
+  align-items: center;
+  justify-content: center;
 }
 
 .rightPanel img {
@@ -162,7 +163,13 @@ body {
     text-align: center;
     padding-top: 24px;
     padding-bottom: 60px;
-    gap: 40px;
+    gap: 24px;
+  }
+
+  .leftPanel {
+    flex-grow: 0;
+    flex-basis: auto;
+    width: 100%;
   }
 
   .leftPanel > div {
@@ -179,7 +186,7 @@ body {
   }
 }
 
-/* RESPONSIVE: Small phones  */
+/* RESPONSIVE: Small phones */
 @media (max-width: 480px) {
   html,
   body {
