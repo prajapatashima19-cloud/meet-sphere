@@ -50,7 +50,6 @@ export default function History() {
           <HomeIcon />
         </IconButton>
 
-        {/* RESPONSIVE: shrink heading on small screens so it doesn't wrap awkwardly next to the icon */}
         <Typography
           variant="h4"
           fontWeight="bold"
@@ -89,7 +88,6 @@ export default function History() {
                     borderRadius: "8px",
                     fontWeight: 600,
                     mt: 1,
-                    // RESPONSIVE: long meeting codes wrap instead of overflowing the card
                     wordBreak: "break-word",
                   }}
                 >

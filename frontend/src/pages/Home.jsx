@@ -94,6 +94,7 @@ export function Home() {
                   height: "56px",
                   borderRadius: "10px",
                   fontWeight: "bold",
+                  marginBottom: "20px",
                 }}
                 size="large"
                 onClick={handleJoinMeeting}

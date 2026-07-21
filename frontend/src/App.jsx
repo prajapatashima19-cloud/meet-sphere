@@ -8,24 +8,30 @@ import Home from "./pages/Home";
 import History from "./pages/History";
 import ForgotPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/Resetpassword";
+import { StyledEngineProvider } from '@mui/material/styles';
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<Authentication />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/history" element={<History/>} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-             <Route path="/reset-password/:token" element={<ResetPassword/>} />
-            <Route path="/:url" element={<VideoMeet />} />
-          </Routes>
-        </AuthProvider>
-      </Router>
-    </div>
+    <StyledEngineProvider injectFirst>
+      <div className="App">
+        <Router>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<Authentication />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
+              <Route path="/:url" element={<VideoMeet />} />
+            </Routes>
+          </AuthProvider>
+        </Router>
+      </div>
+    </StyledEngineProvider>
   );
 }
 
