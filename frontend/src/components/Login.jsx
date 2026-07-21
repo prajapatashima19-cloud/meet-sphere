@@ -109,7 +109,7 @@ export default function Login() {
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
         }}
       >
-        <Grid container>
+        <Grid container alignItems="stretch">
           {/* Left Side */}
           {showImage && (
             <Grid
