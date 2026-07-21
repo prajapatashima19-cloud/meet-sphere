@@ -133,6 +133,7 @@ export default function Login() {
               justifyContent: "center",
               alignItems: "center",
               p: { xs: 3, sm: 5 },
+              pt: { xs: 1.5, sm: 2 },
             }}
           >
             <Box
@@ -145,6 +146,7 @@ export default function Login() {
                 sx={{
                   bgcolor: "primary.main",
                   mx: "auto",
+                  mt: 1, 
                   width: 36,
                   height: 36,
                 }}
@@ -157,8 +159,8 @@ export default function Login() {
                   display: "flex",
                   justifyContent: "center",
                   gap: 2,
-                  mb: 2,
-                  mt: 1,
+                  mb: 1,
+                  mt: 0.5,
                 }}
               >
                 <Button
