@@ -342,7 +342,12 @@ function RemoteVideoTile({ stream, username, videoOn }) {
   return (
     <div
       ref={wrapRef}
-      style={{ width: "100%", height: "100%", overflow: "hidden", touchAction: "none" }}
+      style={{
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        touchAction: "none",
+      }}
     >
       <video
         key={videoOn ? "on" : "off"}
@@ -395,8 +400,12 @@ export default function VideoMeetComponent() {
   const socketIdRef = useRef();
 
   const localVideoref = useRef();
-  const localBoxRef = useRef(); // apni video ke draggable box ka ref
   const users = useRef({});
+  const {
+    ref: localBoxRef,
+    size: localSize,
+    pos: localPos,
+  } = useLocalVideoBox();
 
   let [usernameInput, setUsernameInput] = useState("");
   let [videoAvailable, setVideoAvailable] = useState(true);
@@ -413,9 +422,6 @@ export default function VideoMeetComponent() {
   let [videos, setVideos] = useState([]);
 
   let [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
- 
- const { ref: localBoxRef, size: localSize, pos: localPos } = useLocalVideoBox();
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -1241,7 +1247,12 @@ export default function VideoMeetComponent() {
                 ? { width: localSize.width, height: localSize.height }
                 : {}),
               ...(localPos
-                ? { left: localPos.x, top: localPos.y, right: "auto", bottom: "auto" }
+                ? {
+                    left: localPos.x,
+                    top: localPos.y,
+                    right: "auto",
+                    bottom: "auto",
+                  }
                 : {}),
             }}
           >
