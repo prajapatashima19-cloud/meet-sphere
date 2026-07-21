@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import withAuth from "../utils/withAuth";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
-import { Button, IconButton, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import RestoreIcon from "@mui/icons-material/Restore";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import { AuthContext } from "../contexts/AuthContext";
@@ -69,7 +69,7 @@ export function Home() {
       {/* HERO SECTION */}
       <div className="meetContainer">
         <div className="leftPanel">
-          <div>
+          <div className="heroContent">
             <h1>
               <span style={{ color: "#1976d2" }}>Connect</span> with anyone,
               <br />
@@ -94,7 +94,6 @@ export function Home() {
                   height: "56px",
                   borderRadius: "10px",
                   fontWeight: "bold",
-                  marginBottom: "20px",
                 }}
                 size="large"
                 onClick={handleJoinMeeting}
