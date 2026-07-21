@@ -80,6 +80,7 @@ body {
   align-items: center;
   padding: 40px clamp(20px, 6vw, 70px) 80px;
   min-height: calc(100vh - 80px);
+  min-height: calc(100dvh - 80px);
   overflow: hidden;
   flex-wrap: wrap;
   gap: 32px;
@@ -227,17 +228,20 @@ body {
   .meetContainer {
     flex-direction: column;
     height: calc(100vh - 62px);
+    height: calc(100dvh - 62px);
     min-height: auto;
     justify-content: center;
     padding: 12px 20px;
     overflow: hidden;
     gap: clamp(10px, 2.5vh, 20px);
+    gap: clamp(10px, 2.5dvh, 20px);
   }
 
   .heroContent {
     display: flex;
     flex-direction: column;
     gap: clamp(6px, 1.5vh, 12px);
+    gap: clamp(6px, 1.5dvh, 12px);
     width: 100%;
   }
 
@@ -255,6 +259,7 @@ body {
     justify-content: center;
     margin-bottom: 0;
     gap: clamp(6px, 1.5vh, 10px);
+    gap: clamp(6px, 1.5dvh, 10px);
   }
 
   .meetingCodeField {
@@ -275,6 +280,7 @@ body {
   .rightPanel img {
     width: clamp(90px, 32vw, 220px);
     padding: clamp(8px, 2vh, 16px);
+    padding: clamp(8px, 2dvh, 16px);
   }
 }
 
