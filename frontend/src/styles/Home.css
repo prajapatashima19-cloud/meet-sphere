@@ -117,7 +117,7 @@ body {
 
 .meetingCodeField {
   width: 260px;
-  max-width: 80%;
+  max-width: 100%;
   flex: 1 1 220px;
 }
 
@@ -247,7 +247,7 @@ body {
 
   .meetingCodeField {
     flex: 0 0 auto;
-    width: 80%;
+    width: 100%;
   }
 
   .joinButton {
