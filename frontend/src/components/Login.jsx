@@ -105,7 +105,6 @@ export default function Login() {
         sx={{
           width: "100%",
           maxHeight: "92dvh",
-          overflowY: "auto",
           borderRadius: 4,
           boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
         }}
