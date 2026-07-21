@@ -78,7 +78,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px clamp(20px, 6vw, 70px);
+  padding: 40px clamp(20px, 6vw, 70px) 80px;
   min-height: calc(100vh - 80px);
   overflow: hidden;
   flex-wrap: wrap;
@@ -113,11 +113,16 @@ body {
   flex-shrink: 0;
 }
 
-.rightPanel {
-  flex: 1 1 280px;
+.joinRow {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;  
+}
+
+.leftPanel p {
+  margin-top: 4px;    
+  margin-bottom: 16px;
 }
 
 .rightPanel img {
@@ -156,7 +161,7 @@ body {
     justify-content: center;
     text-align: center;
     padding-top: 24px;
-    padding-bottom: 40px;
+    padding-bottom: 60px;
     gap: 40px;
   }
 
