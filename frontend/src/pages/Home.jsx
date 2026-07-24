@@ -14,16 +14,27 @@ export function Home() {
 
   const { addToUserHistory } = useContext(AuthContext);
 
-  const handleJoinMeeting = () => {
-    const savedUsername = localStorage.getItem("username");
+  const handleJoinMeeting = async () => {
+  console.log("1. Join button clicked");
 
-    if (!savedUsername) {
-      alert("Please login first");
-      return;
-    }
+  const savedUsername = localStorage.getItem("username");
+  if (!savedUsername) {
+    alert("Please login first");
+    return;
+  }
 
+  if (!meetingCode.trim()) {
+    alert("Please enter a meeting code");
+    return;
+  }
+
+  try {
+    await addToUserHistory(meetingCode);
     navigate(`/${meetingCode}`);
-  };
+  } catch (err) {
+    console.error("ERROR:", err);
+  }
+};
 
   return (
     <>
@@ -35,7 +46,7 @@ export function Home() {
 
           <div className="logoText">
             <h2>MeetSphere</h2>
-            {/* RESPONSIVE: tagline hidden on very small screens to save navbar space */}
+            {/* RESPONSIVE */}
             <p className="tagline">Secure Video Meetings</p>
           </div>
         </div>

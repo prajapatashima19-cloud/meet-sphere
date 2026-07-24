@@ -209,7 +209,7 @@ const getUserHistory = async (req, res) => {
 const addToHistory = async (req, res) => {
   try {
     const username = req.user.username;
-    const { meeting_code } = req.body;
+    const { meetingCode } = req.body;
 
     const user = await User.findOne({ username });
 
@@ -219,7 +219,7 @@ const addToHistory = async (req, res) => {
 
     const newMeeting = new Meeting({
       user_id: user.username,
-      meetingCode: meeting_code,
+      meetingCode: meetingCode,
     });
 
     await newMeeting.save();

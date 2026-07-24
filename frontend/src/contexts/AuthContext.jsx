@@ -5,7 +5,7 @@ import httpStatus from "http-status";
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
-  const BASE_URL = "https://meet-sphere-ccvb.onrender.com/api/v1/users";
+  const BASE_URL = `${import.meta.env.VITE_SERVER_URL}/api/v1/users`;
 
   // Login
   const handleLogin = async (username, password) => {
@@ -72,23 +72,28 @@ export default function AuthProvider({ children }) {
 
   // Add History
 
-  const addToUserHistory = async (meetingCode) => {
-    try {
-      const token = localStorage.getItem("token");
+ const addToUserHistory = async (meetingCode) => {
+  try {
+    const token = localStorage.getItem("token");
 
-      const response = await axios.post(
-        `${BASE_URL}/add_to_activity`,
-        { meeting_code: meetingCode },
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+    console.log("TOKEN:", token);
+
+    const response = await axios.post(
+      `${BASE_URL}/add_to_activity`,
+      { meetingCode },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      }
+    );
 
-      return response.data;
-    } catch (e) {
-      throw e;
-    }
-  };
+    console.log(response.data);
+  } catch (err) {
+    console.log(err.response?.status);
+    console.log(err.response?.data);
+  }
+};
 
   return (
     <AuthContext.Provider

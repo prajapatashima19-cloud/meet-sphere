@@ -6,3 +6,5 @@ backend/node_modules/
 **/.env
 
 frontend/README.md
+
+mongo-data/

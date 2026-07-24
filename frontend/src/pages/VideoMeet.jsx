@@ -82,19 +82,6 @@ const getInitial = (name) => {
   return name.trim().charAt(0).toUpperCase();
 };
 
-/* =========================================================
-   IMPORTANT: React ke onTouchMove synthetic handlers browser me
-   "passive" listeners hote hain by default, isliye unke andar
-   e.preventDefault() call karne se bhi page-level pinch-zoom
-   nahi rukta. Isliye hum yaha native addEventListener use kar
-   rahe hain with { passive: false } — yahi asli fix hai.
-========================================================= */
-
-/* ---------------------------------------------------------
-   1) Sirf PINCH-ZOOM (remote video tiles ke liye)
-   - 2-finger pinch => sirf isi video ko zoom karta hai
-   - Double-tap => zoom reset
---------------------------------------------------------- */
 function usePinchZoomNative(elRef) {
   const [scale, setScale] = useState(1);
 
