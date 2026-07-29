@@ -71,8 +71,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/meet-sphere:frontend-latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/meet-sphere:frontend-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
