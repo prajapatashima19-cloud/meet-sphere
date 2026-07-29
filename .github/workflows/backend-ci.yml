@@ -92,11 +92,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Optional: trigger a deploy hook (Render, Railway, Fly.io, EC2 via SSH, etc.)
-  # deploy:
-  #   name: Deploy
-  #   needs: docker-build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Trigger deploy
-  #       run: curl -X POST "${{ secrets.DEPLOY_HOOK_URL }}"
+  deploy:
+    name: Deploy to Render
+    needs: docker-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render deploy
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
