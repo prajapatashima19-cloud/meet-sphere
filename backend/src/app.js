@@ -16,7 +16,23 @@ const server = createServer(app); // app instance create kiya [app server ko ded
 const io = connectToSocket(server); // socket.io bi dediya
 
 app.set("port", process.env.PORT || 8080);
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",              // local dev (Vite default port)
+  process.env.CLIENT_URL,               // production frontend (Render/Vercel)
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "40kb" }));
 app.use(express.urlencoded({ limit: "40kb", extended: true }));
 
@@ -26,6 +42,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: true,
+      sameSite: "none",
+    },
   })
 );
 app.use(passport.initialize());
