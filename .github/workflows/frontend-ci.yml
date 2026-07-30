@@ -70,12 +70,10 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
+          build-args: |
+            VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/meet-sphere:frontend-latest
             ${{ secrets.DOCKERHUB_USERNAME }}/meet-sphere:frontend-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  # NOTE: Vercel deploy is NOT handled here.
-  # Vercel's native Git integration (already connected to this repo)
-  # auto-deploys on every push to main — no extra step needed.
