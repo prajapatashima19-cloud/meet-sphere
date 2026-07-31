@@ -194,7 +194,8 @@ export default function Login() {
                   color="text.secondary"
                   sx={{ textAlign: "center", mt: 0.5 }}
                 >
-                  Welcome back! Please login to continue.
+                  {/* Welcome back! Please login to continue. */}
+                  Welcome back to MeetSphere! Connect with your team in seconds.
                 </Typography>
               )}
 
